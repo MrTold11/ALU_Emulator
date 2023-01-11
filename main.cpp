@@ -9,27 +9,43 @@
 #define FILE_IN "files/fibonacci.txt"
 #define FILE_OUT "files/out.txt"
 
+#define PAIR(name, val) std::make_pair(name, (Flags) char(val)),
 #define CHECK_BIT(var, pos) ((var) & (1<<(pos)))
 
-const std::map<std::string, char> CMD_TABLE{
-        std::make_pair("XZ", 0b10101010),
-        std::make_pair("YZ", 0b10101000),
-        std::make_pair("X++", 0b01111110),
-        std::make_pair("Y++", 0b11011100),
-        std::make_pair("X--", 0b00111010),
-        std::make_pair("Y--", 0b11001000),
-        std::make_pair("ADD X", 0b00001010),
-        std::make_pair("ADD Y", 0b00001000),
-        std::make_pair("SUB X", 0b01001110), // X = X - Y
-        std::make_pair("SUB Y", 0b00011100), // Y = Y - X
-        std::make_pair("OR X", 0b01010110),
-        std::make_pair("OR Y", 0b01010100),
-        std::make_pair("AND X", 0b00000010),
-        std::make_pair("AND Y", 0b00000000),
-        std::make_pair("IMP X", 0b00010110),
-        std::make_pair("IMP Y", 0b01000100),
-        std::make_pair("OUT X", 0b00101011),
-        std::make_pair("OUT Y", 0b10001001)
+struct Flags {
+
+    bool zx : 1;
+    bool nx : 1;
+    bool zy : 1;
+    bool ny : 1;
+    bool f : 1;
+    bool nf : 1;
+    bool sf : 1;
+    bool of : 1;
+
+    explicit Flags(char flags) {
+        zx = CHECK_BIT(flags, 7);
+        nx = CHECK_BIT(flags, 6);
+        zy = CHECK_BIT(flags, 5);
+        ny = CHECK_BIT(flags, 4);
+        f  = CHECK_BIT(flags, 3);
+        nf = CHECK_BIT(flags, 2);
+        sf = CHECK_BIT(flags, 1);
+        of = CHECK_BIT(flags, 0);
+    }
+
+};
+
+const std::map<std::string, Flags> CMD_TABLE{
+        PAIR("XZ",    0b10101010) PAIR("YZ",    0b10101000)
+        PAIR("X++",   0b01111110) PAIR("Y++",   0b11011100)
+        PAIR("X--",   0b00111010) PAIR("Y--",   0b11001000)
+        PAIR("OR X",  0b01010110) PAIR("OR Y",  0b01010100)
+        PAIR("AND X", 0b00000010) PAIR("AND Y", 0b00000000)
+        PAIR("ADD X", 0b00001010) PAIR("ADD Y", 0b00001000)
+        PAIR("SUB X", 0b01001110) PAIR("SUB Y", 0b00011100) // X = X - Y; Y = Y - Y
+        PAIR("IMP X", 0b00010110) PAIR("IMP Y", 0b01000100)
+        PAIR("OUT X", 0b00101011) PAIR("OUT Y", 0b10001001)
 };
 
 int X = 0, Y = 0;
@@ -41,9 +57,9 @@ int readCommands();
 
 void pass_line(const std::string &line);
 
-void ALU_pass(bool zx, bool nx, bool zy, bool ny, bool f, bool nf, bool sf, bool of);
+void ALU_pass(Flags flags);
 
-char ALU_process(bool zx, bool nx, bool zy, bool ny, bool f);
+char ALU_process(Flags flags);
 
 int main() {
     infile.open(FILE_IN);
@@ -73,16 +89,9 @@ int readCommands() {
 void pass_line(const std::string &line) {
     try {
         //translate mnemonics into bits
-        char flags = CMD_TABLE.at(line);
-        //bits to booleans
-        ALU_pass(CHECK_BIT(flags, 7),
-                 CHECK_BIT(flags, 6),
-                 CHECK_BIT(flags, 5),
-                 CHECK_BIT(flags, 4),
-                 CHECK_BIT(flags, 3),
-                 CHECK_BIT(flags, 2),
-                 CHECK_BIT(flags, 1),
-                 CHECK_BIT(flags, 0));
+        Flags flags = CMD_TABLE.at(line);
+        //send to ALU
+        ALU_pass(flags);
     } catch (const std::exception &ex) {
         std::cout << "Unknown command: " << line << std::endl;
     }
@@ -90,27 +99,27 @@ void pass_line(const std::string &line) {
 
 int result;
 
-void ALU_pass(bool zx, bool nx, bool zy, bool ny, bool f, bool nf, bool sf, bool of) {
-    result = (unsigned char) ALU_process(zx, nx, zy, ny, f);
-    if (nf) result = ~result;
+void ALU_pass(Flags flags) {
+    result = (unsigned char) ALU_process(flags);
+    if (flags.nf) result = ~result;
 
-    if (sf) {
+    if (flags.sf) {
         X = result;
-        if (of) outfile << "X=" << X << std::endl;
+        if (flags.of) outfile << "X=" << X << std::endl;
     } else {
         Y = result;
-        if (of) outfile << "Y=" << Y << std::endl;
+        if (flags.of) outfile << "Y=" << Y << std::endl;
     }
 }
 
 //count result
-char ALU_process(bool zx, bool nx, bool zy, bool ny, bool f) {
+char ALU_process(Flags flags) {
     int X1 = 0, Y1 = 0;
-    if (!zx) X1 = X;
-    if (nx) X1 = ~X1;
-    if (!zy) Y1 = Y;
-    if (ny) Y1 = ~Y1;
-    return char(f ? X1 + Y1 : X1 & Y1);
+    if (!flags.zx) X1 = X;
+    if (flags.nx) X1 = ~X1;
+    if (!flags.zy) Y1 = Y;
+    if (flags.ny) Y1 = ~Y1;
+    return char(flags.f ? X1 + Y1 : X1 & Y1);
 }
 
 
