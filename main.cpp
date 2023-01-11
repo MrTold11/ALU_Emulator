@@ -43,7 +43,7 @@ const std::map<std::string, Flags> CMD_TABLE{
         PAIR("OR X",  0b01010110) PAIR("OR Y",  0b01010100)
         PAIR("AND X", 0b00000010) PAIR("AND Y", 0b00000000)
         PAIR("ADD X", 0b00001010) PAIR("ADD Y", 0b00001000)
-        PAIR("SUB X", 0b01001110) PAIR("SUB Y", 0b00011100) // X = X - Y; Y = Y - Y
+        PAIR("SUB X", 0b01001110) PAIR("SUB Y", 0b00011100) // X = X - Y; Y = Y - X
         PAIR("IMP X", 0b00010110) PAIR("IMP Y", 0b01000100)
         PAIR("OUT X", 0b00101011) PAIR("OUT Y", 0b10001001)
 };
