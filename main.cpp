@@ -37,15 +37,16 @@ struct Flags {
 };
 
 const std::map<std::string, Flags> CMD_TABLE{
-        PAIR("XZ",    0b10101010) PAIR("YZ",    0b10101000)
-        PAIR("X++",   0b01111110) PAIR("Y++",   0b11011100)
-        PAIR("X--",   0b00111010) PAIR("Y--",   0b11001000)
-        PAIR("OR X",  0b01010110) PAIR("OR Y",  0b01010100)
-        PAIR("AND X", 0b00000010) PAIR("AND Y", 0b00000000)
-        PAIR("ADD X", 0b00001010) PAIR("ADD Y", 0b00001000)
-        PAIR("SUB X", 0b01001110) PAIR("SUB Y", 0b00011100) // X = X - Y; Y = Y - X
-        PAIR("IMP X", 0b00010110) PAIR("IMP Y", 0b01000100)
-        PAIR("OUT X", 0b00101011) PAIR("OUT Y", 0b10001001)
+        PAIR("XZ",     0b10101010) PAIR("YZ",     0b10101000)
+        PAIR("X++",    0b01111110) PAIR("Y++",    0b11011100)
+        PAIR("X--",    0b00111010) PAIR("Y--",    0b11001000)
+        PAIR("OR X",   0b01010110) PAIR("OR Y",   0b01010100)
+        PAIR("AND X",  0b00000010) PAIR("AND Y",  0b00000000)
+        PAIR("ADD X",  0b00001010) PAIR("ADD Y",  0b00001000)
+        PAIR("SUB X",  0b01001110) PAIR("SUB Y",  0b00011100) // X = X - Y; Y = Y - X
+        PAIR("SUB XS", 0b00011110) PAIR("SUB YS", 0b01001100) // X = Y - X; Y = X - Y
+        PAIR("IMP X",  0b00010110) PAIR("IMP Y",  0b01000100)
+        PAIR("OUT X",  0b00101011) PAIR("OUT Y",  0b10001001)
 };
 
 int X = 0, Y = 0;
