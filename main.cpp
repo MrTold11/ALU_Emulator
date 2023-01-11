@@ -88,14 +88,17 @@ void pass_line(const std::string &line) {
     }
 }
 
+int result;
+
 void ALU_pass(bool zx, bool nx, bool zy, bool ny, bool f, bool nf, bool sf, bool of) {
+    result = (unsigned char) ALU_process(zx, nx, zy, ny, f);
+    if (nf) result = ~result;
+
     if (sf) {
-        X = (unsigned char) ALU_process(zx, nx, zy, ny, f);
-        if (nf) X = ~X;
+        X = result;
         if (of) outfile << "X=" << X << std::endl;
     } else {
-        Y = (unsigned char) ALU_process(zx, nx, zy, ny, f);
-        if (nf) Y = ~Y;
+        Y = result;
         if (of) outfile << "Y=" << Y << std::endl;
     }
 }
