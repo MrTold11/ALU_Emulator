@@ -6,7 +6,7 @@
 
 //Those define are for the working directory where main.cpp is stored
 //So 'files' dir is located in the same folder with main.cpp
-#define FILE_IN "files/fibonacci.txt"
+#define FILE_IN "files/in.txt"
 #define FILE_OUT "files/out.txt"
 
 #define PAIR(name, val) std::make_pair(name, (Flags) char(val)),
